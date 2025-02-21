@@ -10,9 +10,9 @@ export function JsonEditor() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Force an immediate update whenever nodes or edges change
+  
   useEffect(() => {
-    // Add a small delay to ensure we catch the latest state
+   
     const timeoutId = setTimeout(() => {
       const newJson = JSON.stringify(flowToAgentsJson(nodes, edges), null, 2);
       setJson(newJson);
