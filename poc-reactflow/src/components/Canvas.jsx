@@ -123,6 +123,7 @@ export function Canvas() {
     };
 
     setNodes((nds) => [...nds, newNode]);
+    setContextNodes((prevNodes) => [...prevNodes, newNode]);
   };
 
   const edgeOptions = {

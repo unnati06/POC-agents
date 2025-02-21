@@ -10,14 +10,17 @@ export function JsonEditor() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  
+  // Force an immediate update whenever nodes or edges change
   useEffect(() => {
-    if (!isEditing) {
+    // Add a small delay to ensure we catch the latest state
+    const timeoutId = setTimeout(() => {
       const newJson = JSON.stringify(flowToAgentsJson(nodes, edges), null, 2);
       setJson(newJson);
       setError(null);
-    }
-  }, [nodes, edges, isEditing]);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [nodes, edges]);
 
   const updateCanvas = (jsonValue) => {
     try {
@@ -43,44 +46,16 @@ export function JsonEditor() {
     setIsEditing(false);
   };
 
-  
-  const handleEditorMount = (editor) => {
-    if (json) {
-      updateCanvas(json);
-    }
-  };
-
-  const handleSaveJson = () => {
-    try {
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'agents.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      setError('Failed to save JSON file');
-    }
-  };
-
   return (
     <div className="h-full w-full">
       <h3 className="text-xl text-center border-none">Text Editor</h3>
-      <button
-        onClick={handleSaveJson}
-        className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md"
-      >
-        Save JSON
-      </button>
+    
       <Editor
+      
         height="100%"
         defaultLanguage="json"
         value={json}
         onChange={handleJsonChange}
-        onMount={handleEditorMount}
         options={{ 
           minimap: { enabled: false }, 
           wordWrap: 'on',
