@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+  title: Email API
+  version: 1.0.0
+paths:
+  /send-email:
+    post:
+      summary: Send an email
+      parameters:
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: subject
+          in: query
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+
+  /emails:
+    get:
+      summary: Retrieve a list of emails
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        200:
+          description: A list of emails
+
+  /emails/{id}:
+    get:
+      summary: Retrieve a single email
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: The requested email
+
+  /delete-email/{id}:
+    delete:
+      summary: Delete an email
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Email deleted successfully
