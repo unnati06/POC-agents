@@ -11,7 +11,7 @@ export function Sidebar() {
         
         {actions.map((action) => (
           <div
-            key={`${action.method}-${action.path}`} // Unique key
+            key={`${action.method}-${action.path}`} 
             draggable
             onDragStart={(e) => {
               e.dataTransfer.setData('application/reactflow', JSON.stringify(action));
@@ -25,7 +25,6 @@ export function Sidebar() {
               gap: 8,
               alignItems: 'center'
             }}>
-              {/* HTTP Method Badge */}
               <span
               className={`px-3 py-1 text-white text-xs font-bold uppercase rounded-md transition-all duration-300 shadow-md 
                 ${

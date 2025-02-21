@@ -2,10 +2,10 @@ import { useAppContext } from '../store';
 import { useState, useEffect } from 'react';
 
 export function NodeConfigurator() {
-  const { openAPISpec, nodes, setNodes } = useAppContext(); // Using context instead of Zustand
+  const { openAPISpec, nodes, setNodes } = useAppContext(); 
   const [selectedNode, setSelectedNode] = useState(null);
 
-  // Watch for node selection changes
+ 
   useEffect(() => {
     const selected = nodes.find((n) => n.selected);
     setSelectedNode(selected);
@@ -13,7 +13,7 @@ export function NodeConfigurator() {
 
   if (!selectedNode) return null;
 
-  // Get API endpoint details from OpenAPI spec
+  
   const action = selectedNode.data.action;
   const endpoint = openAPISpec?.paths?.[action.path]?.[action.method];
   const parameters = endpoint?.parameters || [];

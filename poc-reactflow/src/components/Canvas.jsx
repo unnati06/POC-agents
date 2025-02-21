@@ -11,39 +11,68 @@ export function Canvas() {
   
   console.log('Initial contextNodes:', contextNodes);
 
-  // Initialize with empty arrays first
+  
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Handle context node updates
+  
   useEffect(() => {
     if (contextNodes && Array.isArray(contextNodes)) {
-      console.log('Updating nodes with:', contextNodes);
-      // Ensure each node has a valid position
-      const validNodes = contextNodes.map((node, index) => {
-        if (!node.position || !node.position.x || !node.position.y) {
-          console.log('Node missing position:', node);
-          return {
-            ...node,
-            position: {
-              x: node.position?.x || 250,  // Fixed x position
-              y: node.position?.y || index * 150  // Vertical spacing 
-            }
-          };
+      const validNodes = contextNodes.map((node, index) => ({
+        ...node,
+        type: 'apiAction',
+        position: {
+          x: node.position?.x || 250,
+          y: node.position?.y || index * 150
         }
-        return node;
-      });
-      console.log('Setting nodes with:', validNodes);
+      }));
       setNodes(validNodes);
     }
   }, [contextNodes]);
 
-  // Handle node changes without triggering context updates unnecessarily
+  
+  const onNodesDelete = (nodesToDelete) => {
+    
+    const deletedNodeIds = new Set(nodesToDelete.map(node => node.id));
+    
+    
+    const newEdges = edges.filter(edge => 
+      !deletedNodeIds.has(edge.source) && !deletedNodeIds.has(edge.target)
+    );
+    setEdges(newEdges);
+    setContextEdges(newEdges);
+
+    
+    const remainingNodes = nodes
+      .filter(node => !deletedNodeIds.has(node.id))
+      .map((node, index) => ({
+        ...node,
+        position: {
+          x: node.position.x,
+          y: index * 150 
+        }
+      }));
+
+   
+    setNodes(remainingNodes);
+    setContextNodes(remainingNodes);
+  };
+
+  
   const handleNodesChange = (changes) => {
-    console.log('Canvas - Node changes:', changes);
     onNodesChange(changes);
     
-    // Only update context for position changes
+    
+    const deletionChanges = changes.filter(change => change.type === 'remove');
+    if (deletionChanges.length > 0) {
+      const nodesToDelete = nodes.filter(node => 
+        deletionChanges.some(change => change.id === node.id)
+      );
+      onNodesDelete(nodesToDelete);
+      return;
+    }
+
+   
     if (changes.some(change => change.type === 'position')) {
       const updatedNodes = nodes.map(node => {
         const change = changes.find(c => c.id === node.id && c.type === 'position');
@@ -53,18 +82,10 @@ export function Canvas() {
     }
   };
 
-  // Handle edge changes
+  
   const handleEdgesChange = (changes) => {
     onEdgesChange(changes);
     setContextEdges(edges);
-  };
-
-  const onNodesDelete = (nodesToDelete) => {
-    // Remove associated edges when nodes are deleted
-    const nodeIds = new Set(nodesToDelete.map(node => node.id));
-    setEdges(edges.filter(edge => 
-      !nodeIds.has(edge.source) && !nodeIds.has(edge.target)
-    ));
   };
 
   const onEdgesDelete = (edgesToDelete) => {
@@ -73,8 +94,8 @@ export function Canvas() {
   };
 
   const onDragOver = (event) => {
-    event.preventDefault();  // ✅ Allows dropping
-    event.dataTransfer.dropEffect = "move"; // ✅ Shows move icon instead of 🚫
+    event.preventDefault(); 
+    event.dataTransfer.dropEffect = "move"; 
   };
 
   const onDrop = (event) => {
@@ -83,13 +104,13 @@ export function Canvas() {
     const reactFlowBounds = document.querySelector('.react-flow').getBoundingClientRect();
     const actionData = JSON.parse(event.dataTransfer.getData('application/reactflow'));
 
-    // Get the position where the node was dropped
+   
     const position = {
       x: event.clientX - reactFlowBounds.left,
       y: event.clientY - reactFlowBounds.top
     };
 
-    // Create the new node
+   
     const newNode = {
       id: `node-${nodes.length + 1}`,
       type: 'apiAction',
@@ -146,6 +167,8 @@ export function Canvas() {
           deleteKeyCode={['Backspace', 'Delete']}
           nodeTypes={edgeTypes}
           defaultViewport={{ x: 0, y: 0, zoom: 1 }}
+          snapToGrid={true}
+          snapGrid={[20, 20]}
         >
           <Background />
           <Controls />

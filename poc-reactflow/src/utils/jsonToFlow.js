@@ -6,10 +6,9 @@ export function jsonToFlow(jsonData) {
     return { nodes: [], edges: [] };
   }
 
-  // Convert agents to nodes with guaranteed positions
   const nodes = jsonData.agents.map((agent, index) => ({
     id: agent.id,
-    type: 'default', // Changed to 'default' instead of 'apiAction'
+    type: 'default', 
     position: {
       x:250,
       y: index * 150

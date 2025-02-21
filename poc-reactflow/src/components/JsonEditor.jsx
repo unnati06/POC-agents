@@ -10,7 +10,7 @@ export function JsonEditor() {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  // Update JSON when canvas changes
+  
   useEffect(() => {
     if (!isEditing) {
       const newJson = JSON.stringify(flowToAgentsJson(nodes, edges), null, 2);
@@ -43,7 +43,7 @@ export function JsonEditor() {
     setIsEditing(false);
   };
 
-  // Handle initial mount and value changes
+  
   const handleEditorMount = (editor) => {
     if (json) {
       updateCanvas(json);

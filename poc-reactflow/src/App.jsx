@@ -7,8 +7,7 @@ function App(){
   const { loadSpec } = useAppContext();
 
   useEffect(() => {
-    // Replace with your actual OpenAPI spec URL
-    loadSpec('/mock-openapi.yaml');
+        loadSpec('/mock-openapi.yaml');
   }, []);
   return(
     <div className="h-screen w-full flex">
